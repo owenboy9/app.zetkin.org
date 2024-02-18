@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { applySession } from 'next-session';
 import { IncomingMessage } from 'http';
 import { NextApiRequestCookies } from 'next/dist/server/api-utils';
@@ -87,6 +88,7 @@ export const scaffold =
     options?: ScaffoldOptions
   ): GetServerSideProps<ScaffoldedProps> =>
   async (contextFromNext: GetServerSidePropsContext) => {
+    console.log('scaffold');
     const ctx = contextFromNext as ScaffoldedContext;
 
     ctx.apiFetch = createApiFetch(ctx.req.headers);
@@ -100,6 +102,8 @@ export const scaffold =
       zetkinDomain: process.env.ZETKIN_API_DOMAIN,
     });
 
+    console.log('applySession');
+
     const { req, res } = contextFromNext;
     await applySession(req, res);
     const reqWithSession = req as IncomingMessage & {
@@ -110,6 +114,8 @@ export const scaffold =
     if (reqWithSession.session.tokenData) {
       ctx.z.setTokenData(reqWithSession.session.tokenData);
     }
+
+    console.log('get user');
 
     try {
       const userRes = await ctx.z.resource('users', 'me').get();
