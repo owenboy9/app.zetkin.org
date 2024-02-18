@@ -1,3 +1,4 @@
+import { getIronSession } from 'iron-session';
 import { GetServerSideProps } from 'next';
 
 import { AppSession } from '../utils/types';
@@ -11,8 +12,11 @@ export const getServerSideProps: GetServerSideProps = scaffold(
       //if user cannot log out, they are prob already logged out
     }
 
-    const reqWithSession = context.req as { session?: AppSession };
-    reqWithSession.session?.destroy();
+    const session = await getIronSession<AppSession>(context.req, context.res, {
+      cookieName: 'zsid',
+      password: 'thisispasswordandshouldbelongerthan32characters',
+    });
+    session?.destroy();
 
     return {
       redirect: {
