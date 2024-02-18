@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { GetServerSideProps } from 'next';
 
 import { stringToBool } from '../utils/stringUtils';
@@ -14,6 +15,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     zetkinDomain: process.env.ZETKIN_API_DOMAIN,
   });
 
+  Object.entries(process.env).forEach((keyAndVal) => console.log(keyAndVal));
   const url = new URL(process.env.VERCEL_URL || 'http://localhost:3000');
   const protocol = url.protocol;
   const host = url.host;
