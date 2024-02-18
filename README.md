@@ -1,5 +1,4 @@
 # Zetkin
-
 This is the new Zetkin front-end application, currently under development. It
 will run at app.zetkin.org and replace the current www.zetk.in, call.zetk.in and
 organize.zetk.in applications.
