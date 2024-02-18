@@ -56,10 +56,12 @@ export default async function handle(
         : undefined;
       res.writeHead(result.status, headers);
 
-      return res.end();
+      res.end();
     } catch (err) {
-      return res.status(500).json(err);
+      res.status(500).json(err);
     }
+
+    return;
   }
 
   const z = Z.construct({
