@@ -12,10 +12,7 @@ import { ZetkinZResource, ZetkinZResult } from 'utils/types/sdk';
 const Z = require('zetkin');
 
 interface HttpVerbMethod {
-  (
-    resource: ZetkinZResource,
-    req: NextApiRequestWithSession
-  ): Promise<ZetkinZResult>;
+  (resource: ZetkinZResource, req: NextApiRequest): Promise<ZetkinZResult>;
 }
 
 const HTTP_VERBS_TO_ZETKIN_METHODS: Record<string, HttpVerbMethod> = {
@@ -24,20 +21,16 @@ const HTTP_VERBS_TO_ZETKIN_METHODS: Record<string, HttpVerbMethod> = {
     const filters = getFilters(req);
     return resource.get(null, null, filters);
   },
-  PATCH: (resource: ZetkinZResource, req: NextApiRequestWithSession) =>
+  PATCH: (resource: ZetkinZResource, req: NextApiRequest) =>
     resource.patch(req.body),
-  POST: (resource: ZetkinZResource, req: NextApiRequestWithSession) =>
+  POST: (resource: ZetkinZResource, req: NextApiRequest) =>
     resource.post(req.body),
-  PUT: (resource: ZetkinZResource, req: NextApiRequestWithSession) =>
+  PUT: (resource: ZetkinZResource, req: NextApiRequest) =>
     resource.put(req.body),
 };
 
-type NextApiRequestWithSession = NextApiRequest & {
-  session: AppSession;
-};
-
 export default async function handle(
-  req: NextApiRequestWithSession,
+  req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
   const path = req.query.path as string[];
@@ -96,9 +89,14 @@ export default async function handle(
     const method = HTTP_VERBS_TO_ZETKIN_METHODS[req.method!];
     const result = await method(resource, req);
 
+    const session = await getIronSession<AppSession>(req, res, {
+      cookieName: 'zsid',
+      password: 'thisispasswordandshouldbelongerthan32characters',
+    });
+
     // Update session in case tokens were refreshed
-    req.session.tokenData = z.getTokenData();
-    await req.session.commit();
+    session.tokenData = z.getTokenData();
+    await session.save();
 
     res.status(result.httpStatus).json(result.data);
   } catch (err) {
