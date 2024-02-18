@@ -1,6 +1,6 @@
 //TODO: Enable eslint rules and fix errors
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { applySession } from 'next-session';
+import { getIronSession } from 'iron-session';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { AppSession } from 'utils/types';
@@ -81,9 +81,12 @@ export default async function handle(
   const resource = z.resource(pathStr + (queryParams ? '?' + queryParams : ''));
 
   try {
-    await applySession(req, res);
-    if (req.session.tokenData) {
-      z.setTokenData(req.session.tokenData);
+    const session = await getIronSession<AppSession>(req, res, {
+      cookieName: 'zsid',
+      password: 'thisispasswordandshouldbelongerthan32characters',
+    });
+    if (session.tokenData) {
+      z.setTokenData(session.tokenData);
     }
   } catch (err) {
     // No problem if the session could not be found
