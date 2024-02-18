@@ -9,7 +9,8 @@ export const createApiFetch = (
 ): ApiFetch => {
   return (path, init) => {
     const protocol = process.env.ZETKIN_APP_PROTOCOL || 'http';
-    const apiUrl = `${protocol}://${process.env.ZETKIN_APP_HOST}${prefix}${path}`;
+    const host = process.env.VERCEL_URL || 'localhost:3000';
+    const apiUrl = `${protocol}://${host}${prefix}${path}`;
     console.log('apiUrl', apiUrl);
     return fetch(apiUrl, {
       ...init,
