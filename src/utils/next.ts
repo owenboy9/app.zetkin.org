@@ -88,7 +88,7 @@ export const scaffold =
     options?: ScaffoldOptions
   ): GetServerSideProps<ScaffoldedProps> =>
   async (contextFromNext: GetServerSidePropsContext) => {
-    console.log('scaffold');
+    console.log('scaffold', process.env);
     const ctx = contextFromNext as ScaffoldedContext;
 
     ctx.apiFetch = createApiFetch(ctx.req.headers);
