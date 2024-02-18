@@ -25,9 +25,8 @@ export const getServerSideProps: GetServerSideProps = scaffold(
     const code = query?.code;
 
     if (code) {
-      const url = new URL(process.env.VERCEL_URL || 'http://localhost:3000');
-      const protocol = url.protocol;
-      const host = url.host;
+      const protocol = process.env.ZETKIN_APP_PROTOCOL;
+      const host = process.env.VERCEL_URL;
 
       let destination = '/';
 
