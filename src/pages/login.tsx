@@ -14,8 +14,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     zetkinDomain: process.env.ZETKIN_API_DOMAIN,
   });
 
-  const protocol = stringToBool(process.env.ZETKIN_USE_TLS) ? 'https' : 'http';
-  const host = process.env.ZETKIN_APP_HOST;
+  const url = new URL(process.env.VERCEL_URL || 'http://localhost:3000');
+  const protocol = url.protocol;
+  const host = url.host;
+  //const protocol = process.env.ZETKIN_APP_PROTOCOL;
+  //const host = process.env.VERCEL_URL;
 
   let scopes;
   const { level } = context.query;
