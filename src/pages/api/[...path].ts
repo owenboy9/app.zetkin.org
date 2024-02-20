@@ -1,11 +1,10 @@
 //TODO: Enable eslint rules and fix errors
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { getIronSession } from 'iron-session';
+import { applySession } from 'next-session';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { AppSession } from 'utils/types';
 import getFilters from 'utils/getFilters';
-import requiredEnvVar from 'utils/requiredEnvVar';
 import { stringToBool } from 'utils/stringUtils';
 import { ZetkinZResource, ZetkinZResult } from 'utils/types/sdk';
 
@@ -21,7 +20,10 @@ export const config = {
 const Z = require('zetkin');
 
 interface HttpVerbMethod {
-  (resource: ZetkinZResource, req: NextApiRequest): Promise<ZetkinZResult>;
+  (
+    resource: ZetkinZResource,
+    req: NextApiRequestWithSession
+  ): Promise<ZetkinZResult>;
 }
 
 const HTTP_VERBS_TO_ZETKIN_METHODS: Record<string, HttpVerbMethod> = {
@@ -30,16 +32,20 @@ const HTTP_VERBS_TO_ZETKIN_METHODS: Record<string, HttpVerbMethod> = {
     const filters = getFilters(req);
     return resource.get(null, null, filters);
   },
-  PATCH: (resource: ZetkinZResource, req: NextApiRequest) =>
+  PATCH: (resource: ZetkinZResource, req: NextApiRequestWithSession) =>
     resource.patch(req.body),
-  POST: (resource: ZetkinZResource, req: NextApiRequest) =>
+  POST: (resource: ZetkinZResource, req: NextApiRequestWithSession) =>
     resource.post(req.body),
-  PUT: (resource: ZetkinZResource, req: NextApiRequest) =>
+  PUT: (resource: ZetkinZResource, req: NextApiRequestWithSession) =>
     resource.put(req.body),
 };
 
+type NextApiRequestWithSession = NextApiRequest & {
+  session: AppSession;
+};
+
 export default async function handle(
-  req: NextApiRequest,
+  req: NextApiRequestWithSession,
   res: NextApiResponse
 ): Promise<void> {
   const path = req.query.path as string[];
@@ -85,12 +91,9 @@ export default async function handle(
   const resource = z.resource(pathStr + (queryParams ? '?' + queryParams : ''));
 
   try {
-    const session = await getIronSession<AppSession>(req, res, {
-      cookieName: 'zsid',
-      password: requiredEnvVar('SESSION_PASSWORD'),
-    });
-    if (session.tokenData) {
-      z.setTokenData(session.tokenData);
+    await applySession(req, res);
+    if (req.session.tokenData) {
+      z.setTokenData(req.session.tokenData);
     }
   } catch (err) {
     // No problem if the session could not be found
@@ -100,14 +103,9 @@ export default async function handle(
     const method = HTTP_VERBS_TO_ZETKIN_METHODS[req.method!];
     const result = await method(resource, req);
 
-    const session = await getIronSession<AppSession>(req, res, {
-      cookieName: 'zsid',
-      password: requiredEnvVar('SESSION_PASSWORD'),
-    });
-
     // Update session in case tokens were refreshed
-    session.tokenData = z.getTokenData();
-    await session.save();
+    req.session.tokenData = z.getTokenData();
+    await req.session.commit();
 
     res.status(result.httpStatus);
     if (result.httpStatus == 204) {

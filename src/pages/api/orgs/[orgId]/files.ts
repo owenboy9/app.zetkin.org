@@ -1,11 +1,14 @@
-import { getIronSession } from 'iron-session';
+import { applySession } from 'next-session';
 import http from 'http';
 import https from 'https';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { AppSession } from 'utils/types';
-import requiredEnvVar from 'utils/requiredEnvVar';
 import { stringToBool } from 'utils/stringUtils';
+
+type NextApiRequestWithSession = NextApiRequest & {
+  session: AppSession;
+};
 
 export const config = {
   api: {
@@ -14,17 +17,14 @@ export const config = {
 };
 
 export default async function handler(
-  frontendReq: NextApiRequest,
+  frontendReq: NextApiRequestWithSession,
   res: NextApiResponse
 ): Promise<void> {
   let tokenData: AppSession['tokenData'] | null;
 
   try {
-    const session = await getIronSession<AppSession>(frontendReq, res, {
-      cookieName: 'zsid',
-      password: requiredEnvVar('SESSION_PASSWORD'),
-    });
-    tokenData = session.tokenData;
+    await applySession(frontendReq, res);
+    tokenData = frontendReq.session.tokenData;
   } catch (err) {
     tokenData = null;
   }
