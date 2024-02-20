@@ -1,7 +1,6 @@
 import { applySession } from 'next-session';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import { stringToBool } from '../utils/stringUtils';
 import { Button, ButtonGroup, Container, Typography } from '@mui/material';
 
 import { AppSession } from '../utils/types';
