@@ -29,7 +29,7 @@ export default async function createNewView(
     return;
   }
 
-  const client = new BackendApiClient(req.headers);
+  const client = new BackendApiClient(req, res);
 
   try {
     await Promise.all(

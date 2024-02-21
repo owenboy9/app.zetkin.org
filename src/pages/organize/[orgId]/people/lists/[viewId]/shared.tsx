@@ -55,7 +55,7 @@ export const getServerSideProps: GetServerSideProps = scaffold(async (ctx) => {
   const { orgId, viewId } = ctx.params!;
 
   // TODO: Handle this some other way with server-side models?
-  const apiClient = new BackendApiClient(ctx.req.headers);
+  const apiClient = new BackendApiClient(ctx.req, ctx.res);
   const accessLevel = await getAccessLevel(
     apiClient,
     parseInt(orgId as string),

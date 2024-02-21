@@ -18,7 +18,7 @@ const scaffoldOptions = {
 export const getServerSideProps: GetServerSideProps = scaffold(async (ctx) => {
   const { orgId, folderId } = ctx.params!;
 
-  const apiClient = new BackendApiClient(ctx.req.headers);
+  const apiClient = new BackendApiClient(ctx.req, ctx.res);
   const folder = await apiClient.get(
     `/api/orgs/${orgId}/people/view_folders/${folderId}`
   );

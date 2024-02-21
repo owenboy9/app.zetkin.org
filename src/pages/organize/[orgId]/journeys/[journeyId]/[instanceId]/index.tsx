@@ -31,7 +31,7 @@ export const getJourneyInstanceScaffoldProps: ScaffoldedGetServerSideProps =
   async (ctx) => {
     const { orgId, instanceId, journeyId } = ctx.params!;
 
-    const apiClient = new BackendApiClient(ctx.req.headers);
+    const apiClient = new BackendApiClient(ctx.req, ctx.res);
     const journeyInstance = await apiClient.get<ZetkinJourneyInstance>(
       `/api/orgs/${orgId}/journey_instances/${instanceId}`
     );

@@ -18,7 +18,7 @@ const scaffoldOptions = {
 
 export const getServerSideProps: GetServerSideProps = scaffold(async (ctx) => {
   const { orgId, campId, taskId } = ctx.params!;
-  const apiClient = new BackendApiClient(ctx.req.headers);
+  const apiClient = new BackendApiClient(ctx.req, ctx.res);
 
   try {
     const task = await apiClient.get<ZetkinTask>(

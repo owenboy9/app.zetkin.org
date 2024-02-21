@@ -29,7 +29,7 @@ const scaffoldOptions = {
 export const getServerSideProps: GetServerSideProps = scaffold(async (ctx) => {
   const { orgId } = ctx.params!;
 
-  const apiClient = new BackendApiClient(ctx.req.headers);
+  const apiClient = new BackendApiClient(ctx.req, ctx.res);
   const campaignsState = await apiClient.get(`/api/orgs/${orgId}/campaigns`);
   const eventsState = await apiClient.get(`/api/orgs/${orgId}/actions`);
   const today = new Date(Date.now()).toISOString();

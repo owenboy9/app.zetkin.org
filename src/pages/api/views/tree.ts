@@ -14,7 +14,7 @@ export default async function handle(
 ): Promise<void> {
   const { orgId } = req.query;
 
-  const client = new BackendApiClient(req.headers);
+  const client = new BackendApiClient(req, res);
 
   try {
     const views = await client.get<ZetkinView[]>(

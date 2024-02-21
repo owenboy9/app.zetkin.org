@@ -35,7 +35,7 @@ export default async function handler(
   }
   const formatType = FORMAT_TYPES[format];
 
-  const apiClient = new BackendApiClient(req.headers);
+  const apiClient = new BackendApiClient(req, res);
 
   const view = await apiClient.get<ZetkinView>(
     `/api/orgs/${orgId}/people/views/${viewId}`

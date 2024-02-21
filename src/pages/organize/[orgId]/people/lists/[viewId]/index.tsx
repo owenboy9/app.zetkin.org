@@ -22,7 +22,7 @@ const scaffoldOptions = {
 export const getServerSideProps: GetServerSideProps = scaffold(async (ctx) => {
   const { orgId, viewId } = ctx.params!;
 
-  const apiClient = new BackendApiClient(ctx.req.headers);
+  const apiClient = new BackendApiClient(ctx.req, ctx.res);
   const view = await apiClient.get(`/api/orgs/${orgId}/people/views/${viewId}`);
 
   if (view) {

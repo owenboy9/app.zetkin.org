@@ -31,7 +31,7 @@ export class RPCRouter {
       return res.status(400).json(inputParams.error);
     }
 
-    const apiClient = new BackendApiClient(req.headers);
+    const apiClient = new BackendApiClient(req, res);
 
     const result = await def.handler(inputParams.data, apiClient, req);
 

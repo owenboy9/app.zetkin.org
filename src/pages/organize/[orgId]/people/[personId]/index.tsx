@@ -31,7 +31,7 @@ export const getPersonScaffoldProps: ScaffoldedGetServerSideProps = async (
   const { orgId, personId } = ctx.params!;
 
   try {
-    const apiClient = new BackendApiClient(ctx.req.headers);
+    const apiClient = new BackendApiClient(ctx.req, ctx.res);
     await apiClient.get(`/api/orgs/${orgId}/people/${personId}`);
     return {
       props: {

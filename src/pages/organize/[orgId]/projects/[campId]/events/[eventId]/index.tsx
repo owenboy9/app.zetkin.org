@@ -16,7 +16,7 @@ export const getServerSideProps: GetServerSideProps = scaffold(
   async (ctx) => {
     const { orgId, campId, eventId } = ctx.params!;
     try {
-      const client = new BackendApiClient(ctx.req.headers);
+      const client = new BackendApiClient(ctx.req, ctx.res);
       const data = await client.get<ZetkinEvent>(
         `/api/orgs/${orgId}/actions/${eventId}`
       );

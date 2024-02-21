@@ -32,7 +32,7 @@ export default async function handler(
 ): Promise<void> {
   const { org, assignment } = req.query;
 
-  const client = new BackendApiClient(req.headers);
+  const client = new BackendApiClient(req, res);
 
   const stats = await client.get<ZetkinCallAssignmentStats>(
     `/api/orgs/${org}/call_assignments/${assignment}/stats`
