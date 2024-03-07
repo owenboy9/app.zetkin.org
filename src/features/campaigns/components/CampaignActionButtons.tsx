@@ -19,6 +19,7 @@ import useCampaign from '../hooks/useCampaign';
 import useCreateCampaignActivity from '../hooks/useCreateCampaignActivity';
 import useCreateEmail from 'features/emails/hooks/useCreateEmail';
 import useCreateEvent from 'features/events/hooks/useCreateEvent';
+import useEmailFrames from 'features/emails/hooks/useEmailFrames';
 import { useNumericRouteParams } from 'core/hooks';
 import useOrganization from 'features/organizations/hooks/useOrganization';
 import { ZetkinCampaign } from 'utils/types/zetkin';
@@ -56,11 +57,14 @@ const CampaignActionButtons: React.FunctionComponent<
     campId
   );
   const { deleteCampaign, updateCampaign } = useCampaign(orgId, campaign.id);
-  const { createEmail } = useCreateEmail(orgId);
+  const frames = useEmailFrames(orgId).data || [];
+  const createEmail = useCreateEmail(orgId);
 
   if (!organization) {
     return null;
   }
+
+  const emailFeatureDisabled = !organization.email || frames.length === 0;
 
   const handleCreateEvent = () => {
     const defaultStart = new Date();
@@ -113,12 +117,13 @@ const CampaignActionButtons: React.FunctionComponent<
               onClick: () => setCreateTaskDialogOpen(true),
             },
             {
-              disabled: !organization.email,
+              disabled: emailFeatureDisabled,
               icon: <EmailOutlined />,
               label: messages.linkGroup.createEmail(),
               onClick: () =>
                 createEmail({
                   campaign_id: campId,
+                  frame: frames[0],
                   title: messages.form.createEmail.newEmail(),
                 }),
             },

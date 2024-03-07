@@ -9,6 +9,7 @@ import messageIds from '../l10n/messageIds';
 import { People } from '@mui/icons-material';
 import TabbedLayout from '../../../utils/layout/TabbedLayout';
 import useEmail from '../hooks/useEmail';
+import useEmailFrames from '../hooks/useEmailFrames';
 import useEmailState from '../hooks/useEmailState';
 import useEmailStats from '../hooks/useEmailStats';
 import { useNumericRouteParams } from 'core/hooks';
@@ -33,10 +34,13 @@ const EmailLayout: FC<EmailLayoutProps> = ({
   const emailStatsFuture = useEmailStats(orgId, emailId);
   const emailState = useEmailState(orgId, emailId);
   const organization = useOrganization(orgId).data;
+  const frames = useEmailFrames(orgId).data || [];
 
   if (!email || !organization) {
     return null;
   }
+
+  const emailFeatureDisabled = !organization.email || frames.length === 0;
 
   return (
     <>
@@ -104,7 +108,7 @@ const EmailLayout: FC<EmailLayoutProps> = ({
       >
         {children}
       </TabbedLayout>
-      <Dialog open={!organization.email}>
+      <Dialog open={emailFeatureDisabled}>
         <Box
           alignItems="center"
           display="flex"
