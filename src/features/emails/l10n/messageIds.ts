@@ -121,7 +121,7 @@ export default makeMessages('feat.emails', {
   },
   orgHasNoEmail: {
     errorMessage: m(
-      'Your organization can not use the email feature since it does not have a registered email address.'
+      'Your organization can not use the email feature since it either does not have a registered email address or any email frames.'
     ),
     goBackButton: m('Go back'),
   },

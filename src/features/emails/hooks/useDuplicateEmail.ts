@@ -2,22 +2,15 @@ import copyEmail from '../rpc/copyEmail';
 import { emailCreate, emailCreated, emailUpdate, emailUpdated } from '../store';
 import { useApiClient, useAppDispatch } from 'core/hooks';
 
-type useDuplicateEmailReturn = {
-  duplicateEmail: () => void;
-};
-
-export default function useDuplicateEmail(
-  orgId: number,
-  emailId: number
-): useDuplicateEmailReturn {
+export default function useDuplicateEmail(orgId: number, emailId: number) {
   const apiClient = useApiClient();
   const dispatch = useAppDispatch();
 
-  const duplicateEmail = async () => {
+  return async () => {
     dispatch(emailCreate);
     const duplicatedEmail = await apiClient.rpc(copyEmail, {
-      emailId: emailId,
-      orgId: orgId,
+      emailId,
+      orgId,
     });
     dispatch(emailUpdate([duplicatedEmail.id, ['target']]));
     dispatch(emailCreated(duplicatedEmail));
@@ -31,6 +24,4 @@ export default function useDuplicateEmail(
       ])
     );
   };
-
-  return { duplicateEmail };
 }

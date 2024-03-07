@@ -21,7 +21,7 @@ const EmailActionButtons = ({ email, orgId }: EmailActionButtonsProp) => {
   const messages = useMessages(messageIds);
   const { showConfirmDialog } = useContext(ZUIConfirmDialogContext);
   const { deleteEmail, updateEmail } = useEmail(orgId, email.id);
-  const { duplicateEmail } = useDuplicateEmail(orgId, email.id);
+  const duplicateEmail = useDuplicateEmail(orgId, email.id);
 
   return (
     <Box display="flex">

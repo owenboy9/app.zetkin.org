@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { EmailFrame } from '../types';
 import IApiClient from 'core/api/client/IApiClient';
 import { makeRPCDef } from 'core/rpc/types';
 import {
@@ -30,11 +31,16 @@ async function handle(params: Params, apiClient: IApiClient) {
     `/api/orgs/${orgId}/emails/${emailId}`
   );
 
+  const frames = await apiClient.get<EmailFrame[]>(
+    `/api/orgs/${orgId}/email_frames`
+  );
+
   const createdEmail = await apiClient.post<ZetkinEmail, ZetkinEmailPostBody>(
     `/api/orgs/${orgId}/emails`,
     {
       campaign_id: email.campaign?.id || null,
       content: email.content,
+      frame: frames[0],
       subject: email.subject,
       title: email.title,
     }
