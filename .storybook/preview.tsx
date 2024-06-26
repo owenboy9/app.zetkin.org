@@ -6,6 +6,8 @@ import createStore from '../src/core/store';
 import Environment from '../src/core/env/Environment';
 import Providers from '../src/core/Providers';
 import RosaLuxemburgUser from '../integrationTesting/mockData/users/RosaLuxemburgUser';
+import { ThemeProvider } from '@mui/material';
+import { newTheme } from '../src/theme';
 
 const store = createStore();
 const env = new Environment(store, new BrowserApiClient(), {
@@ -23,7 +25,7 @@ const preview: Preview = {
         store={store}
         user={RosaLuxemburgUser}
       >
-        {story()}
+        <ThemeProvider theme={newTheme}>{story()}</ThemeProvider>
       </Providers>
     ),
   ],
