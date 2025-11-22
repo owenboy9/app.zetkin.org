@@ -16,6 +16,11 @@ import { ZetkinView } from 'features/views/components/types';
 import { Msg, useMessages } from 'core/i18n';
 import messageIds from '../l10n/messageIds';
 import zuiMessageIds from 'zui/l10n/messageIds';
+import {
+  FILTER_TYPE,
+  OPERATION,
+  ZetkinSmartSearchFilter,
+} from 'features/smartSearch/components/types';
 
 export interface EmptyViewProps {
   orgId: number;
@@ -31,6 +36,8 @@ const EmptyView: FunctionComponent<EmptyViewProps> = ({ orgId, view }) => {
     view.id
   );
 
+  const [initialFilterSpec, setInitialFilterSpec] =
+    useState<ZetkinSmartSearchFilter[]>();
   return (
     <Box m={2}>
       <Grid container spacing={2}>
@@ -76,9 +83,44 @@ const EmptyView: FunctionComponent<EmptyViewProps> = ({ orgId, view }) => {
             <CardActions>
               <Button
                 data-testid="EmptyView-configureButton"
-                onClick={() => setQueryDialogOpen(true)}
+                onClick={() => {
+                  setInitialFilterSpec(undefined);
+                  setQueryDialogOpen(true);
+                }}
               >
                 <Msg id={messageIds.empty.dynamic.configureButton} />
+              </Button>
+            </CardActions>
+          </Card>
+        </Grid>
+        <Grid size={{ md: 6 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h5">
+                <Msg id={messageIds.empty.newPeople.headline} />
+              </Typography>
+              <Typography variant="body1">
+                <Msg id={messageIds.empty.newPeople.description} />
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button
+                data-testid="EmptyView-configureButton"
+                onClick={() => {
+                  setInitialFilterSpec([
+                    {
+                      config: {
+                        after: '-30d',
+                        field: 'extra_date',
+                      },
+                      op: 'add' as OPERATION,
+                      type: 'person_field' as FILTER_TYPE,
+                    },
+                  ]);
+                  setQueryDialogOpen(true);
+                }}
+              >
+                <Msg id={messageIds.empty.newPeople.configureButton} />
               </Button>
             </CardActions>
           </Card>
@@ -86,6 +128,8 @@ const EmptyView: FunctionComponent<EmptyViewProps> = ({ orgId, view }) => {
       </Grid>
       {queryDialogOpen && (
         <ViewSmartSearchDialog
+          initialDialogState="edit"
+          initialFilterSpec={initialFilterSpec}
           onDialogClose={() => setQueryDialogOpen(false)}
           orgId={orgId}
           view={view}

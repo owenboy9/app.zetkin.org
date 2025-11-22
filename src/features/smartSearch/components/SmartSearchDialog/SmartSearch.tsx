@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import FilterEditor from './FilterEditor';
 import FilterGallery from './FilterGallery';
@@ -29,6 +29,8 @@ export interface SmartSearchDialogProps {
   onSave?: (query: Pick<ZetkinQuery, 'filter_spec'>) => void;
   readOnly?: boolean;
   hasSaveCancelButtons?: boolean;
+  initialDialogState?: STATE;
+  initialFilterSpec?: ZetkinSmartSearchFilter[];
 }
 
 enum STATE {
@@ -45,6 +47,8 @@ const SmartSearch = ({
   onSave,
   query,
   readOnly,
+  initialDialogState,
+  initialFilterSpec,
 }: SmartSearchDialogProps): JSX.Element => {
   const {
     filtersWithIds: filterArray,
@@ -63,7 +67,17 @@ const SmartSearch = ({
   const [selectedFilter, setSelectedFilter] =
     useState<SelectedSmartSearchFilter>(null);
 
-  const [searchState, setSearchState] = useState(STATE.PREVIEW);
+  const [searchState, setSearchState] = useState(
+    initialDialogState ?? STATE.PREVIEW
+  );
+
+  useEffect(() => {
+    if (initialFilterSpec) {
+      initialFilterSpec.forEach((filter) => {
+        addFilter(filter);
+      });
+    }
+  }, []);
 
   return (
     <>
